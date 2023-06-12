@@ -15,24 +15,24 @@ contract("Voting", accounts => {
             Votinginstance = await Voting.new({from: _owner});
         });
 
-        it.skip ("should verify require not passing", async () => {
+        it ("should verify require not passing", async () => {
             await Votinginstance.startProposalsRegistering({from: _owner});
             await expectRevert(Votinginstance.addVoter(_voter1, {from: _owner}), 'Voters registration is not open yet');
         });
 
-        it.skip ("should be add to the list of voter", async () => {
+        it ("should be add to the list of voter", async () => {
             await Votinginstance.addVoter(_owner, {from: _owner});
             await Votinginstance.addVoter(_voter1, {from: _owner});
             const voter = await Votinginstance.getVoter(_voter1);
             await expect(voter.isRegistered).to.be.true;
         });
 
-        it.skip ("shouldn't be able to add several time the same voter", async () => {
+        it ("shouldn't be able to add several time the same voter", async () => {
             await Votinginstance.addVoter(_owner, {from: _owner});
             await expectRevert(Votinginstance.addVoter(_owner, {from: _owner}), 'Already registered');
         });
 
-        it.skip ("should verify event", async () => {
+        it ("should verify event", async () => {
             await expectEvent(await Votinginstance.addVoter(_owner, {from: _owner}), "VoterRegistered", {voterAddress: _owner});
         });
     });
@@ -45,26 +45,26 @@ contract("Voting", accounts => {
             await Votinginstance.startProposalsRegistering({from: _owner});
         });
 
-        it.skip ("should verify voter can't be add anymore", async () => {
+        it ("should verify voter can't be add anymore", async () => {
             await Votinginstance.endProposalsRegistering({from: _owner});
             await expectRevert(Votinginstance.addProposal("proposal Description", {from: _owner}), 'Proposals are not allowed yet');
         });
 
-        it.skip ("should add a proposal", async () => {
+        it ("should add a proposal", async () => {
             await Votinginstance.addProposal("proposal Description", {from: _owner});
             const proposal = await Votinginstance.getOneProposal(1);
             await expect(proposal.description).equal("proposal Description");
         });
 
-        it.skip ("Unregistred voter shouln't add proposal", async () => {
+        it ("Unregistred voter shouln't add proposal", async () => {
             await expectRevert(Votinginstance.addProposal("proposal Description", {from: _voter2}), "You're not a voter");
         });
 
-        it.skip ("Nothing shouln't be accepted as a proposal", async () => {
+        it ("Nothing shouln't be accepted as a proposal", async () => {
             await expectRevert(Votinginstance.addProposal("", {from: _voter1}), 'Vous ne pouvez pas ne rien proposer');
         });
 
-        it.skip ("should verify event", async () => {
+        it ("should verify event", async () => {
             await expectEvent(await Votinginstance.addProposal("proposal Description", {from: _voter1}), "ProposalRegistered", {proposalId: new BN(1)});
         });
     });
@@ -80,12 +80,12 @@ contract("Voting", accounts => {
             await Votinginstance.startVotingSession({from: _owner});
         });
 
-        it.skip ("should verify voter can't vote after the session ends", async () => {
+        it ("should verify voter can't vote after the session ends", async () => {
             await Votinginstance.endVotingSession({from: _owner});
             await expectRevert(Votinginstance.setVote(new BN(1), {from: _voter1}), 'Voting session havent started yet');
         });
 
-        it.skip ("should verify that the vote is register", async () => {
+        it ("should verify that the vote is register", async () => {
             let proposal = await Votinginstance.getOneProposal(1);
             const countBeforeVote = proposal.voteCount;
             await Votinginstance.setVote(new BN(1), {from: _voter1});
@@ -98,16 +98,16 @@ contract("Voting", accounts => {
             await expect(countBeforeVote).to.not.be.bignumber.equal(countAfterVote);
         });
 
-        it.skip ("shouldn't be able to vote twice", async () => {
+        it ("shouldn't be able to vote twice", async () => {
             await Votinginstance.setVote(new BN(1), {from: _voter1});
             await expectRevert(Votinginstance.setVote(new BN(1), {from: _voter1}), 'You have already voted');
         });
 
-        it.skip ("ID shouldn't be out of bound", async () => {
+        it ("ID shouldn't be out of bound", async () => {
             await expectRevert(Votinginstance.setVote(new BN(5), {from: _voter1}), 'Proposal not found');
         });
 
-        it.skip ("should verify event", async () => {
+        it ("should verify event", async () => {
             await expectEvent(await Votinginstance.setVote(new BN(1), {from: _voter1}), "Voted", {voter: _voter1, proposalId: new BN(1)});
         });
     });
@@ -117,14 +117,14 @@ contract("Voting", accounts => {
             Votinginstance = await Voting.new({from: _owner});
         });
 
-        it.skip ("should verify require of RegisteringVoter status", async () => {
+        it ("should verify require of RegisteringVoter status", async () => {
             await expectRevert(Votinginstance.endProposalsRegistering({from: _owner}), 'Registering proposals havent started yet');
             await expectRevert(Votinginstance.startVotingSession({from: _owner}), 'Registering proposals phase is not finished');
             await expectRevert(Votinginstance.endVotingSession({from: _owner}), 'Voting session havent started yet');
             await expectRevert(Votinginstance.tallyVotes({from: _owner}), "Current status is not voting session ended");
         });
 
-        it.skip ("should verify require of ProposalsRegistrationStarted status", async () => {
+        it ("should verify require of ProposalsRegistrationStarted status", async () => {
             await Votinginstance.startProposalsRegistering({from: _owner});
             
             await expectRevert(Votinginstance.startProposalsRegistering({from: _owner}), 'Registering proposals cant be started now');
@@ -134,7 +134,7 @@ contract("Voting", accounts => {
             
         });
 
-        it.skip ("should verify require of ProposalsRegistrationEnded status", async () => {
+        it ("should verify require of ProposalsRegistrationEnded status", async () => {
             await Votinginstance.startProposalsRegistering({from: _owner});
             await Votinginstance.endProposalsRegistering({from: _owner});
 
@@ -144,7 +144,7 @@ contract("Voting", accounts => {
             await expectRevert(Votinginstance.tallyVotes({from: _owner}), "Current status is not voting session ended");
         });
 
-        it.skip ("should verify require of VotingSessionStarted status", async () => {
+        it ("should verify require of VotingSessionStarted status", async () => {
             await Votinginstance.startProposalsRegistering({from: _owner});
             await Votinginstance.endProposalsRegistering({from: _owner});
             await Votinginstance.startVotingSession({from: _owner});
@@ -155,7 +155,7 @@ contract("Voting", accounts => {
             await expectRevert(Votinginstance.tallyVotes({from: _owner}), "Current status is not voting session ended");
         });
 
-        it.skip ("should verify require of VotingSessionEnded status", async () => {
+        it ("should verify require of VotingSessionEnded status", async () => {
             await Votinginstance.startProposalsRegistering({from: _owner});
             await Votinginstance.endProposalsRegistering({from: _owner});
             await Votinginstance.startVotingSession({from: _owner});
